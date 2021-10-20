@@ -1,31 +1,27 @@
 name: go_echo
-
 on:
   push:
-    branches: [ main ]
+    branches:
+      - main
   pull_request:
-    branches: [ main ]
-
+    branches:
+      - main
 jobs:
-
   unit_tests:
-    name: "build and unit tests"
+    name: build and unit tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-
       - name: Set up Go
         uses: actions/setup-go@v2
         with:
           go-version: 1.16
-
       - name: Build
         run: go build -v ./...
-
       - name: Test
         run: go test -v ./...
   aks:
-    name: "run on aks"
+    name: run on aks
     concurrency: test
     runs-on: ubuntu-latest
     steps:
@@ -47,24 +43,20 @@ jobs:
           login-server: ${{ secrets.CLUSTER_NAME }}.azurecr.io
           username: ${{ secrets.ARM_CLIENT_ID }}
           password: ${{ secrets.ARM_CLIENT_SECRET }}
+      - run: >
+          docker build . -t ${{ secrets.CLUSTER_NAME }}.azurecr.io/${{
+          secrets.APP_NAME }}:${{ github.sha }}
 
-      # Container build and push to a Azure Container Registry (ACR)
-      - run: |
-          docker build . -t ${{ secrets.CLUSTER_NAME }}.azurecr.io/${{ secrets.APP_NAME }}:${{ github.sha }}
           docker push ${{ secrets.CLUSTER_NAME }}.azurecr.io/${{ secrets.APP_NAME }}:${{ github.sha }}
-        name: "Docker push"
-      # Set the target Azure Kubernetes Service (AKS) cluster.
+        name: Docker push
       - uses: azure/aks-set-context@v1
         with:
-          creds: '${{ secrets.AZURE_CREDS }}'
+          creds: ${{ secrets.AZURE_CREDS }}
           cluster-name: ${{ secrets.CLUSTER_NAME }}
           resource-group: ${{ secrets.RESOURCE_GROUP_NAME }}
-
-      # Create namespace if doesn't exist
-      - run: |
-          kubectl create namespace ${{ secrets.NAMESPACE }} --dry-run -o json | kubectl apply -f -
-
-      # Create image pull secret for ACR
+      - run: >
+          kubectl create namespace ${{ secrets.NAMESPACE }} --dry-run -o json |
+          kubectl apply -f -
       - uses: azure/k8s-create-secret@v1
         with:
           container-registry-url: ${{ secrets.CLUSTER_NAME }}.azurecr.io
@@ -73,15 +65,15 @@ jobs:
           secret-name: ${{ secrets.SECRET_NAME }}
           namespace: ${{ secrets.NAMESPACE }}
           force: true
-
-      # Deploy app to AKS
       - uses: azure/k8s-deploy@v1
         with:
           manifests: |
             manifests/deployment.yaml
             manifests/service.yaml
-          images: |
-            ${{ secrets.CLUSTER_NAME }}.azurecr.io/${{ secrets.APP_NAME }}:${{ github.sha }}
+          images: >
+            ${{ secrets.CLUSTER_NAME }}.azurecr.io/${{ secrets.APP_NAME }}:${{
+            github.sha }}
           imagepullsecrets: |
             ${{ secrets.SECRET_NAME }}
           namespace: ${{ secrets.NAMESPACE }}
+      - uses: NickKeller/NginxIngressController@main
