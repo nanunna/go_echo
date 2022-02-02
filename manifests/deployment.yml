@@ -1,0 +1,19 @@
+apiVersion : apps/v1
+kind: Deployment
+metadata:
+  name: "aks02ghtest-ac20"
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: "aks02ghtest-ac20"
+  template:
+    metadata:
+      labels:
+        app: "aks02ghtest-ac20"
+    spec:
+      containers:
+        - name: "aks02ghtest-ac20"
+          image: "acraks02test.azurecr.io/aks02ghtest"
+          ports:
+          - containerPort: 80
