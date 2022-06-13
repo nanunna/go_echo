@@ -15,7 +15,7 @@ spec:
         app: goecho
     spec:
       containers:
-        - name: nginx
+        - name: nginx2
           image: devxtestacr01.azurecr.io/naga
           ports:
             - containerPort: 1323
