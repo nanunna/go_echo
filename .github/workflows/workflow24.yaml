@@ -9,7 +9,7 @@ env:
     AZURE_CONTAINER_REGISTRY: devxtestacr01
     CLUSTER_NAME: devx-test-cluster-01
     CLUSTER_RESOURCE_GROUP: devx-test-rg-01
-    CONTAINER_NAME: ""
+    CONTAINER_NAME: "naga"
     DEPLOYMENT_MANIFEST_PATH: |
         ./manifests/deployment.yaml
         ./manifests/service.yaml
