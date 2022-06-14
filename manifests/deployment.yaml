@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: nginx2
-          image: devxtestacr01.azurecr.io/workflow26repo
+          image: devxtestacr01.azurecr.io/workflow28
           ports:
             - containerPort: 1323
