@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: nginx2
-          image: devxtestacr01.azurecr.io/helmrepo3
+          image: helmclustertestacr.azurecr.io/helmrepo3
           ports:
             - containerPort: 1323
