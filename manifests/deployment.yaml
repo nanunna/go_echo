@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: nginx2
-          image: manifesttest01acr.azurecr.io/manifestimage11
+          image: nagabugbashacr.azurecr.io/goechomain
           ports:
             - containerPort: 1323
